@@ -1,0 +1,30 @@
+---
+- name: Install and enable firewalld
+  hosts: all
+  become: yes
+  tasks:
+          - name: Install firewalld
+            package: 
+                name: firewalld
+                state: present
+          - name: Start and enable service
+            service: 
+                name: firewalld
+                state: started
+                enabled: true
+
+- name: Database setup
+  hosts: target2
+  gather_facts: true
+  become: yes
+  tags: dbset
+  roles:
+          - dbserver-setup
+          - db-data
+ 
+- name: Webserver setup
+  hosts: target1
+  become: yes
+  roles:
+          - webserver-setup
+          - webserver-data

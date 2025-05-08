@@ -1,0 +1,25 @@
+- name: Install mariadb
+  package:
+    name: mariadb-server
+    state: present
+
+- name: Install dependency
+  package:
+    name: python3-PyMySQL
+    state: present
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Start and enable service
+  service:
+     name: mariadb
+     state: started
+     enabled: true
+
+- name: Add to firewall
+  firewalld:
+     zone: public
+     port: 3306/tcp
+     permanent: true
+     state: enabled
+     immediate: true
+

@@ -1,0 +1,85 @@
+---
+- name: Disable Webserver
+  hosts: all
+  become: yes
+  tasks:
+          - name: Stop server
+            service:
+                name: httpd
+                state: stopped
+                enabled: false
+          - name: Remove packages
+            package:
+                name:
+                 - php
+                 - php-mysqlnd
+                state: present
+          - name: Remove from firewall
+            firewalld:
+                zone: public
+                port: 80/tcp
+                permanent: true
+                state: disabled
+                immediate: true
+          - name: Disble access to remote database in selinux
+            seboolean:
+                name: httpd_can_network_connect_db
+                state: no
+                persistent: yes
+          - name: Set default index.html
+            replace:
+                path: /etc/httpd/conf/httpd.conf
+                regexp: 'index.php'
+                replace: 'index.index'
+
+- name: Remove content
+  hosts: all
+  become: yes
+  tasks:
+          - name: Remove code
+            tags: rm-code
+            shell: "rm -rf /var/www/html/{,.env,.git}*"
+
+- name: Disable and clear database server
+  hosts: all
+  become: yes
+  tasks:
+          - name: Required packages to continue clearance
+            package:
+                name: 
+                 - mariadb-server
+                 - python3-PyMySQL
+                state: present
+          - name: Run db server
+            service:
+                name: mariadb
+                state: started
+          - name: Remove db user for localhost
+            community.mysql.mysql_user:
+                name: ecomuser
+                state: absent
+                host: localhost
+          - name: Remove db user for target1
+            community.mysql.mysql_user:
+                name: ecomuser
+                state: absent
+                host: target1
+          - name: Drop ecommerce db
+            mysql_db:
+                name: ecomdb
+                state: absent
+          - name: Remove packages
+            package:
+                name: 
+                 - mariadb-server
+                 - python3-PyMySQL
+                state: absent
+          - name: Remove from firewall
+            firewalld:
+                zone: public
+                port: 3306/tcp
+                permanent: true
+                state: disabled
+                immediate: true
+
+

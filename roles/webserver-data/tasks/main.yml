@@ -1,0 +1,39 @@
+---
+- name: Install git
+  package:
+          name: git
+          state: present
+
+- name: Activate network connection
+  tags: connection
+  command: "nmcli dev connect enp0s3"
+
+- name: Download code
+  tags: [git]
+  # ignore_errors: true
+  git:
+          repo: 'https://github.com/kodekloudhub/learning-app-ecommerce.git'
+          dest: /var/www/html/
+          force: true
+- name: Deactivate network connection
+  tags: disconnection
+  command: "nmcli dev disconnect enp0s3"
+
+- name: Set environment variables
+  tags: env
+  blockinfile:
+          path: /var/www/html/.env
+          create: true
+          prepend_newline: true
+          block: |
+                  DB_HOST={{ hostvars['target2']['ansible_host']  }}
+                  DB_USER={{ mysql_username }}
+                  DB_PASSWORD={{ mysql_password }}
+                  DB_NAME={{ mysql_db }}
+
+- name: Copy index.php
+  tags: [index]
+  copy:
+          src: files/index.php
+          dest: /var/www/html/index.php
+                                                                                                                              #

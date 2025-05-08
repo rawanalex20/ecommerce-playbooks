@@ -1,0 +1,23 @@
+---
+- name: Create ecommerce db
+  mysql_db:
+    name: "{{ mysql_db }}"
+    state: present
+- name: Create db user for target1 and grant privileges
+  tags: user
+  community.mysql.mysql_user:
+    name: "{{ mysql_username }}"
+    password: "{{ mysql_password }}"
+    priv: '*.*:ALL'
+    state: present
+    host: target1
+    #host: 192.168.56.134
+- name: Load data
+  tags: [data]
+  community.mysql.mysql_query:
+    login_db: "{{ mysql_db }}"
+    query:
+        - DROP TABLE IF EXISTS products;
+        - CREATE TABLE products (id mediumint(8) unsigned NOT NULL auto_increment,Name varchar(255) default NULL,Price varchar(255) default NULL, ImageUrl varchar(255) default NULL,PRIMARY KEY (id)) AUTO_INCREMENT=1;
+        - INSERT INTO products (Name,Price,ImageUrl) VALUES ("Laptop","100","c-1.png"),("Drone","200","c-2.png"),("VR","300","c-3.png"),("Tablet","50","c-5.png"),("Watch","90","c-6.png"),("Phone Covers","20","c-7.png"),("Phone","80","c-8.png"),("Laptop","150","c-4.png");
+

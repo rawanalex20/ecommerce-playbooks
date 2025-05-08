@@ -1,0 +1,35 @@
+---
+- name: Install packages
+  package:
+    name:
+        - httpd
+        - php
+        - php-mysqlnd
+    state: present
+
+- name: Add to firewall
+  firewalld:
+    zone: public
+    port: 80/tcp
+    permanent: true
+    state: enabled
+    immediate: true
+
+- name: Enable access to remote database in selinux
+  seboolean:
+    name: httpd_can_network_connect_db
+    state: yes
+    persistent: yes
+
+- name: Replace default index.html with index.php
+  replace:
+    path: /etc/httpd/conf/httpd.conf
+    regexp: 'index.html'
+    replace: 'index.php'
+
+- name: Start and enable service
+  service:
+    name: httpd
+    state: restarted
+    enabled: true
+
