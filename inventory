@@ -1,5 +1,5 @@
 target1 ansible_host=192.168.56.134 
-target2 ansible_host=192.168.56.137 #ansible_sudo_pass=admin
+target2 ansible_host=192.168.56.137
 
 [targets]
 target1
