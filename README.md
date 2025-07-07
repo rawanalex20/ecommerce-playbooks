@@ -1,5 +1,5 @@
 # Description
-Ecommerce playbooks deploy an enhanced version of kodekloud sample ecommerce application used in kodekloud Advanced Ansible Course labs. The application consists of a webserver and a database server on two seperate hosts. The playbook uses roles that perform the deployment for each of the servers beside a playbook that clears the whole deployment.
+Ecommerce playbooks deploy a slightly enhanced version of kodekloud sample ecommerce application used in kodekloud Advanced Ansible Course labs. The application consists of a webserver and a database server on two seperate hosts. The playbook uses roles that perform the deployment for each of the servers beside a playbook that clears the whole deployment.
 # Dependencies
 Versions used:
 - ansible-core 2.14.17
